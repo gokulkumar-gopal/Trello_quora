@@ -1,7 +1,7 @@
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.UserDao;
-import com.upgrad.quora.service.entity.UserAuth;
+import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +18,18 @@ public class UserAdminBusinessService {
     @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
 
-    public UserEntity getUser(final String userUuid, final String authorizationToken) throws ResourceNotFoundException, UnauthorizedException {
+    public UserEntity getUser(final String userUuid, final String authorizationToken) {
 
-        UserAuth userAuth = userDao.getUserAuthToken(authorizationToken);
-        RoleEntity role = userAuthTokenEntity.getUser().getRole();
+        UserAuthEntity userAuthEntity = userDao.getUserAuthToken(authorizationToken);
+        /*RoleEntity role = userAuthEntity.getUser().getRole();
 
         if (role != null && role.getUuid() == 101) {
             UserEntity userEntity = userDao.getUser(userUuid);
-            if(userEntity == null) {
-                throw new ResourceNotFoundException("USR-001", "User not found");
-            }
             return userEntity;
         }
 
-        throw new UnauthorizedException("ATH-002", "you are not authorized to fetch user details");
+        throw new UnauthorizedException("ATH-002", "you are not authorized to fetch user details");*/
+        return userAuthEntity.getUser();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
