@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Entity
-@Table(name="users")
+@Table(name="users", schema="quora")
 @NamedQueries(
         {
                 @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email = :email"),
