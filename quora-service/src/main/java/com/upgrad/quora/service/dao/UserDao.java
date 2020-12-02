@@ -38,6 +38,15 @@ public class UserDao {
         }
     }
 
+    public UserEntity getUserByUuid(final String userUuid) {
+        try {
+            return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("uuid", userUuid)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
     public UserAuthEntity getUserAuthToken(final String accessToken){
         try {
             return entityManager.createNamedQuery("userAuthTokenByAccessToken",
@@ -59,6 +68,11 @@ public class UserDao {
 
     public void updateUserAuth(final UserAuthEntity updatedUserAuthEntity){
         entityManager.merge(updatedUserAuthEntity);
+    }
+
+    public UserEntity deleteUser(final UserEntity deleteUser){
+        entityManager.remove(deleteUser);
+        return deleteUser;
     }
 
 }
