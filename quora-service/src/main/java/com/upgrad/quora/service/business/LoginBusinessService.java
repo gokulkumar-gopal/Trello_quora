@@ -19,9 +19,6 @@ public class LoginBusinessService {
     private UserDao userDao;
 
     @Autowired
-    private PasswordCryptographyProvider cryptographyProvider;
-
-    @Autowired
     private UserAdminBusinessService userAdminBusinessService;
 
     @Autowired

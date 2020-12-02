@@ -16,9 +16,6 @@ public class AdminBusinessService {
     @Autowired
     private CommonBusinessService commonBusinessService;
 
-    @Autowired
-    private AdminBusinessService adminBusinessService;
-
     public UserEntity userDelete(final String userUuid, final String authorization) throws AuthorizationFailedException, UserNotFoundException {
         commonBusinessService.checkForAdminRole(authorization);
         UserEntity userToDelete = commonBusinessService.getUserDetails(userUuid);

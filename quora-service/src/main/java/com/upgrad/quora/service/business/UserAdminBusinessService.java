@@ -36,7 +36,7 @@ public class UserAdminBusinessService {
 
         String password = userEntity.getPassword();
         if(password == null){
-            userEntity.setPassword("proman@123");
+            userEntity.setPassword("quora@123");
         }
         String[] encryptedText = cryptographyProvider.encrypt(userEntity.getPassword());
         userEntity.setSalt(encryptedText[0]);
