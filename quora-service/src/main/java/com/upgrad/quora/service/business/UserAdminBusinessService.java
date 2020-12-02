@@ -17,20 +17,6 @@ public class UserAdminBusinessService {
     @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
 
-    public UserEntity getUser(final String userUuid, final String authorizationToken) {
-
-        UserAuthEntity userAuthEntity = userDao.getUserAuthToken(authorizationToken);
-        /*RoleEntity role = userAuthEntity.getUser().getRole();
-
-        if (role != null && role.getUuid() == 101) {
-            UserEntity userEntity = userDao.getUser(userUuid);
-            return userEntity;
-        }
-
-        throw new UnauthorizedException("ATH-002", "you are not authorized to fetch user details");*/
-        return userAuthEntity.getUser();
-    }
-
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity createUser(final UserEntity userEntity) throws SignUpRestrictedException {
 
