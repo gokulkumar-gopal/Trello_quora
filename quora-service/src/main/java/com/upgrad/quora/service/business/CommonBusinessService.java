@@ -26,7 +26,7 @@ public class CommonBusinessService {
     }
 
     @Transactional(propagation =  Propagation.REQUIRED)
-    public void authorizeUser(final String authorization) throws AuthorizationFailedException {
+    public UserAuthEntity authorizeUser(final String authorization) throws AuthorizationFailedException {
         UserAuthEntity userAuthEntity = userDao.getUserAuthToken(authorization);
         if(userAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
@@ -35,6 +35,7 @@ public class CommonBusinessService {
         if(userAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get user details");
         }
+        return userAuthEntity;
     }
 
     public void checkForAdminRole(final String authorization) throws AuthorizationFailedException {
