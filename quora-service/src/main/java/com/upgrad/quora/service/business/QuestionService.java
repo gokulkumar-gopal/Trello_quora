@@ -31,4 +31,9 @@ public class QuestionService {
     public List<QuestionEntity> getQuestionsByEveryone() {
         return questionDao.getQuestionsByEveryone();
     }
+
+    public QuestionEntity getQuestionById(String uuid) {
+        QuestionEntity questionEntity = questionDao.getQuestionById(uuid);
+        return questionEntity;
+    }
 }
