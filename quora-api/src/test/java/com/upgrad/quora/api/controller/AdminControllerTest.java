@@ -22,7 +22,6 @@ public class AdminControllerTest {
     @Autowired
     private MockMvc mvc;
 
-
     //This test case passes when you try to delete the user but the JWT token entered does not exist in the database.
     @Test
     public void deleteWithNonExistingAccessToken() throws Exception {
