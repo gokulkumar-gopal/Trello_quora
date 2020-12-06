@@ -5,10 +5,7 @@ import com.upgrad.quora.service.business.QuestionBusinessService;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
-import com.upgrad.quora.service.exception.AuthenticationFailedException;
-import com.upgrad.quora.service.exception.AuthorizationFailedException;
-import com.upgrad.quora.service.exception.InvalidQuestionException;
-import com.upgrad.quora.service.exception.SignOutRestrictedException;
+import com.upgrad.quora.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -54,32 +51,33 @@ public class QuestionController {
 
 
 
-    @RequestMapping(method = RequestMethod.POST, path = "/question/edit/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionEditResponse> editQuestionContent(final QuestionEditRequest questionEditRequest ,
                                                                     @PathVariable("questionId") final String questionId,
                                                                     @RequestHeader("authorization") final String authorization)
             throws AuthenticationFailedException, AuthorizationFailedException, InvalidQuestionException {
 
 
-        final QuestionEntity questionEntity = questionBusinessService.editQuestionContent(authorization ,questionId);
+        final QuestionEntity questionEntity = questionBusinessService.editQuestionContent(authorization ,questionId,questionEditRequest.getContent());
         QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(questionEntity.getUuid()).status("QUESTION EDITED");
         return new ResponseEntity<>(questionEditResponse, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions( @PathVariable("userId") final String userId,
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions( @PathVariable("userId") final String uuid,
                                                                           @RequestHeader("authorization") final String authorization
-                                                                         ) throws AuthenticationFailedException {
+                                                                         ) throws AuthenticationFailedException, UserNotFoundException {
         final QuestionEntity questionEntity = new QuestionEntity();
         final List<QuestionDetailsResponse> questions = new ArrayList<QuestionDetailsResponse>();
 
-        for(QuestionEntity qE : questionBusinessService.getAllQuestionsbyId(authorization)){
+        for(QuestionEntity qE : questionBusinessService.getAllQuestionsbyId(authorization,uuid)){
             QuestionDetailsResponse questionResponse = new QuestionDetailsResponse().id(qE.getUuid()).content(qE.getContent());
             questions.add(questionResponse);
         }
 
         return new ResponseEntity<>(questions,  HttpStatus.OK);
     }
+
 
 
 

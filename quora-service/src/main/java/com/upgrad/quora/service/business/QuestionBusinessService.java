@@ -65,7 +65,7 @@ public class QuestionBusinessService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public QuestionEntity editQuestionContent(String authorization, String questionId) throws AuthenticationFailedException,
+    public QuestionEntity editQuestionContent(String authorization, String questionId, String content) throws AuthenticationFailedException,
             AuthorizationFailedException, InvalidQuestionException {
         UserAuthEntity userAuthToken =userDao.getUserAuthToken(authorization);
         QuestionEntity questionEntity =questionDao.editQuestionContent(questionId);
@@ -80,10 +80,28 @@ public class QuestionBusinessService {
             throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
         }
 
-        questionEntity.setContent(questionEntity.getContent());
+        questionEntity.setContent(content);
         questionEntity.setDate(ZonedDateTime.now());
 
         return questionDao.updateQuestion(questionEntity);
     }
+
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<QuestionEntity> getAllQuestionsbyId(String authorization, String uuid)
+            throws AuthenticationFailedException, UserNotFoundException {
+        UserAuthEntity userAuthToken =userDao.getUserAuthToken(authorization);
+        authenticateUser(userAuthToken.getUser(),userAuthToken.getLogoutAt());
+
+        if(userDao.getUserByUuid(uuid)==null) {
+            throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
+        }
+
+        List<QuestionEntity> questions  = new ArrayList<QuestionEntity>() ;
+        questions = questionDao.getAllQuestionsbyId(userDao.getUserByUuid(uuid));
+        return questions;
+
+    }
+
 
 }
