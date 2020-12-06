@@ -13,7 +13,7 @@ import javax.validation.constraints.*;
  * SignupUserResponse
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-12-01T20:42:42.229+05:30")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-12-05T20:45:33.506+05:30")
 
 public class SignupUserResponse   {
   @JsonProperty("id")
@@ -54,7 +54,6 @@ public class SignupUserResponse   {
   **/
   @ApiModelProperty(required = true, value = "message showing the status of the signed up user")
   @NotNull
-
 
   public String getStatus() {
     return status;
