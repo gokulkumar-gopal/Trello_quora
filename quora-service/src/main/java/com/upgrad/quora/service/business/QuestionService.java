@@ -21,7 +21,7 @@ public class QuestionService {
         QuestionEntity createdQuestion = questionDao.createQuestion(questionEntity);
         return createdQuestion;
     }
-
+/*
     @Transactional(propagation = Propagation.REQUIRED)
     public List<QuestionEntity> getQuestionsByUser(final UserEntity userEntity) {
         return questionDao.getQuestionsByUser(userEntity);
@@ -31,7 +31,7 @@ public class QuestionService {
     public List<QuestionEntity> getQuestionsByEveryone() {
         return questionDao.getQuestionsByEveryone();
     }
-
+*/
     public QuestionEntity getQuestionById(String uuid) {
         QuestionEntity questionEntity = questionDao.getQuestionById(uuid);
         return questionEntity;
