@@ -7,12 +7,15 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "question")
-@NamedQueries({
-        @NamedQuery(name = "getQuestionById", query = "select q from QuestionEntity q where q.uuid = :uuid"),
-        @NamedQuery(name = "questionsByUserId", query = "select q from QuestionEntity q where q.user = :user"),
-        @NamedQuery(name = "questionsByEveryone", query = "select q from QuestionEntity q")
-})
+@Table(name="question")
+@NamedQueries(
+        {
+                @NamedQuery(name = "getAllQuestions", query = "select u from QuestionEntity u"),
+                @NamedQuery(name = "questionbyId", query = "select u from QuestionEntity u where u.uuid = :uuid"),
+                @NamedQuery(name = "getAllQuestionsbyId", query = "select u from QuestionEntity u where u.user = :user")
+        }
+)
+
 public class QuestionEntity implements Serializable {
 
     @Id
@@ -20,14 +23,14 @@ public class QuestionEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "uuid")
-    @Size(max = 200)
+    @Column(name = "UUID")
     @NotNull
+    @Size(max = 200)
     private String uuid;
 
     @Column(name = "content")
-    @Size(max = 500)
     @NotNull
+    @Size(max = 500)
     private String content;
 
     @Column(name = "date")
@@ -35,6 +38,7 @@ public class QuestionEntity implements Serializable {
     private ZonedDateTime date;
 
     @ManyToOne
+    @NotNull
     @JoinColumn(name = "USER_ID")
     private UserEntity user;
 
