@@ -4,7 +4,7 @@ package com.upgrad.quora.api.controller;
 import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AnswerService;
 import com.upgrad.quora.service.business.CommonBusinessService;
-import com.upgrad.quora.service.business.QuestionService;
+import com.upgrad.quora.service.business.QuestionBusinessService;
 import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
@@ -31,16 +31,11 @@ public class AnswerController {
     private AnswerService answerService;
 
     @Autowired
-    private QuestionService questionService;
+    private QuestionBusinessService questionBusinessService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/question/{questionId}/answer/create", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerResponse> createAnswer(@PathVariable(name = "questionId") String quuid, @RequestHeader(name = "authorization")
             String authorization, AnswerRequest answerRequest) throws InvalidQuestionException, AuthorizationFailedException {
-
-        QuestionEntity question = questionService.getQuestionById(quuid);
-        if(question == null) {
-            throw new InvalidQuestionException("QUES-001", "The question entered is invalid");
-        }
 
         UserAuthEntity userAuthEntity = commonBusinessService.authorizeUser(authorization);
         if(userAuthEntity == null) {
@@ -49,6 +44,11 @@ public class AnswerController {
 
         if(userAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post an answer");
+        }
+
+        QuestionEntity question = questionBusinessService.getQuestionById(quuid);
+        if(question == null) {
+            throw new InvalidQuestionException("QUES-001", "The question entered is invalid");
         }
 
         AnswerEntity answerEntity = new AnswerEntity();
@@ -109,7 +109,7 @@ public class AnswerController {
             throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get the answers");
         }
 
-        QuestionEntity question = questionService.getQuestionById(quuid);
+        QuestionEntity question = questionBusinessService.getQuestionById(quuid);
         if(question == null) {
             throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
         }
