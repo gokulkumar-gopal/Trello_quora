@@ -7,7 +7,6 @@ D:\UPGRAD\Trello_quora_final\quora-service\src\main\java\com\upgrad\quora\servic
 D:\UPGRAD\Trello_quora_final\quora-service\src\main\java\com\upgrad\quora\service\entity\AnswerEntity.java
 D:\UPGRAD\Trello_quora_final\quora-service\src\main\java\com\upgrad\quora\service\business\AuthenticationService.java
 D:\UPGRAD\Trello_quora_final\quora-service\src\main\java\com\upgrad\quora\service\exception\UserNotFoundException.java
-D:\UPGRAD\Trello_quora_final\quora-service\src\main\java\com\upgrad\quora\service\business\QuestionService.java
 D:\UPGRAD\Trello_quora_final\quora-service\src\main\java\com\upgrad\quora\service\exception\AuthenticationFailedException.java
 D:\UPGRAD\Trello_quora_final\quora-service\src\main\java\com\upgrad\quora\service\business\CommonBusinessService.java
 D:\UPGRAD\Trello_quora_final\quora-service\src\main\java\com\upgrad\quora\service\business\PasswordCryptographyProvider.java

@@ -33,15 +33,20 @@ public class QuestionController {
     @RequestMapping(method = RequestMethod.POST, path = "/question/create", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(final QuestionRequest questionRequest,@RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException {
+        final UserAuthEntity userAuthEntity = commonBusinessService.getAuthToken(authorization);
+        authorizeUser(userAuthEntity);
         final QuestionEntity questionEntity = new QuestionEntity();
         questionEntity.setContent(questionRequest.getContent());
-        final QuestionEntity createdQuestionEntity = questionBusinessService.createQuestion(questionEntity,authorization);
+        final QuestionEntity createdQuestionEntity = questionBusinessService.createQuestion(questionEntity,userAuthEntity);
         QuestionResponse questionResponse = new QuestionResponse().id(createdQuestionEntity.getUuid()).status("QUESTION CREATED");
         return new ResponseEntity<>(questionResponse, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/question/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
+
+        final UserAuthEntity userAuth = commonBusinessService.getAuthToken(authorization);
+        authorizeUser(userAuth);
         final QuestionEntity questionEntity = new QuestionEntity();
         final List<QuestionDetailsResponse> questions = new ArrayList<QuestionDetailsResponse>();
 
@@ -49,7 +54,6 @@ public class QuestionController {
             QuestionDetailsResponse questionResponse = new QuestionDetailsResponse().id(qE.getUuid()).content(qE.getContent());
             questions.add(questionResponse);
         }
-
         return new ResponseEntity<>(questions,  HttpStatus.OK);
     }
 
@@ -108,10 +112,13 @@ public class QuestionController {
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions( @PathVariable("userId") final String uuid,
                                                                           @RequestHeader("authorization") final String authorization
                                                                          ) throws AuthorizationFailedException, UserNotFoundException {
+
+        final UserAuthEntity userAuthEntity = commonBusinessService.getAuthToken(authorization);
+        authorizeUser(userAuthEntity);
         final QuestionEntity questionEntity = new QuestionEntity();
         final List<QuestionDetailsResponse> questions = new ArrayList<QuestionDetailsResponse>();
 
-        for(QuestionEntity qE : questionBusinessService.getAllQuestionsbyId(authorization,uuid)){
+        for(QuestionEntity qE : questionBusinessService.getAllQuestionsbyId(uuid)){
             QuestionDetailsResponse questionResponse = new QuestionDetailsResponse().id(qE.getUuid()).content(qE.getContent());
             questions.add(questionResponse);
         }

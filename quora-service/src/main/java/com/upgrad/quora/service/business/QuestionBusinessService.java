@@ -41,27 +41,20 @@ public class QuestionBusinessService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public QuestionEntity createQuestion(QuestionEntity questionEntity, String authorization) throws AuthorizationFailedException {
-
-        UserAuthEntity userAuthToken =userDao.getUserAuthToken(authorization);
-        authenticateUser(userAuthToken.getUser(),userAuthToken.getLogoutAt());
-
+    public QuestionEntity createQuestion(QuestionEntity questionEntity, UserAuthEntity userAuthEntity) throws AuthorizationFailedException {
         questionEntity.setUuid(UUID.randomUUID().toString());
         // questionEntity.setId();
         questionEntity.setDate(ZonedDateTime.now());
-        questionEntity.setUser(userAuthToken.getUser());
+        questionEntity.setUser(userAuthEntity.getUser());
         return questionDao.createQuestion(questionEntity);
 
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<QuestionEntity> getAllQuestions(String authorization) throws AuthorizationFailedException {
-        UserAuthEntity userAuthToken =userDao.getUserAuthToken(authorization);
-        authenticateUser(userAuthToken.getUser(),userAuthToken.getLogoutAt());
         List<QuestionEntity> questions  = new ArrayList<QuestionEntity>();
         questions = questionDao.getAllQuestions();
         return questions;
-
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -85,10 +78,8 @@ public class QuestionBusinessService {
 
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<QuestionEntity> getAllQuestionsbyId(String authorization, String uuid)
-            throws AuthorizationFailedException, UserNotFoundException {
-        UserAuthEntity userAuthToken =userDao.getUserAuthToken(authorization);
-        authenticateUser(userAuthToken.getUser(),userAuthToken.getLogoutAt());
+    public List<QuestionEntity> getAllQuestionsbyId(String uuid)
+            throws UserNotFoundException {
 
         if(userDao.getUserByUuid(uuid) == null) {
             throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
