@@ -65,8 +65,8 @@ public class QuestionBusinessService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public QuestionEntity editQuestionContent(String authorization, String questionId, String content) throws AuthenticationFailedException,
-            AuthorizationFailedException, InvalidQuestionException {
+    public QuestionEntity editQuestionContent(String authorization, String questionId, String content)
+            throws AuthenticationFailedException,AuthorizationFailedException, InvalidQuestionException {
         UserAuthEntity userAuthToken =userDao.getUserAuthToken(authorization);
         QuestionEntity questionEntity =questionDao.editQuestionContent(questionId);
 
@@ -84,6 +84,25 @@ public class QuestionBusinessService {
         questionEntity.setDate(ZonedDateTime.now());
 
         return questionDao.updateQuestion(questionEntity);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteQuestion(String authorization, String questionId)
+            throws AuthenticationFailedException, AuthorizationFailedException, InvalidQuestionException {
+        UserAuthEntity userAuthToken =userDao.getUserAuthToken(authorization);
+        authenticateUser(userAuthToken.getUser(),userAuthToken.getLogoutAt());
+
+        QuestionEntity questionEntity = questionDao.getQuestionById(questionId);
+
+        if(userAuthToken.getUser() != questionEntity.getUser() || userAuthToken.getUser().getRole().equals("non-admin")) {
+            throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
+        }
+
+        if (questionEntity.getUuid() == null){
+            throw new InvalidQuestionException("Ques-001","Entered question uuid does not exist");
+        }
+
+        questionDao.deleteQuestion(questionEntity.getId());
     }
 
 

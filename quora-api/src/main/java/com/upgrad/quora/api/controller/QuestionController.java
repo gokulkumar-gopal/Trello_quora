@@ -1,7 +1,9 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.*;
+import com.upgrad.quora.service.business.CommonBusinessService;
 import com.upgrad.quora.service.business.QuestionBusinessService;
+import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -24,6 +26,9 @@ public class QuestionController {
 
     @Autowired
     private QuestionBusinessService questionBusinessService;
+
+    @Autowired
+    private CommonBusinessService commonBusinessService;
 
     @RequestMapping(method = RequestMethod.POST, path = "/question/create", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(final QuestionRequest questionRequest,@RequestHeader("authorization") final String authorization)
@@ -48,9 +53,6 @@ public class QuestionController {
         return new ResponseEntity<>(questions,  HttpStatus.OK);
     }
 
-
-
-
     @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionEditResponse> editQuestionContent(final QuestionEditRequest questionEditRequest ,
                                                                     @PathVariable("questionId") final String questionId,
@@ -62,6 +64,23 @@ public class QuestionController {
         QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(questionEntity.getUuid()).status("QUESTION EDITED");
         return new ResponseEntity<>(questionEditResponse, HttpStatus.OK);
     }
+
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@PathVariable(name = "questionId") String questionId,
+                                                             @RequestHeader(name = "authorization")
+            String authorization) throws AuthorizationFailedException, InvalidQuestionException, AuthenticationFailedException {
+
+
+        questionBusinessService.deleteQuestion(authorization, questionId);
+
+        QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse();
+        questionDeleteResponse.setId(questionId);
+        questionDeleteResponse.setStatus("QUESTION DELETED");
+
+        return new ResponseEntity<>(questionDeleteResponse, HttpStatus.OK);
+    }
+
 
     @RequestMapping(method = RequestMethod.GET, path = "/question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions( @PathVariable("userId") final String uuid,
