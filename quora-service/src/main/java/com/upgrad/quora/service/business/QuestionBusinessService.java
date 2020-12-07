@@ -22,8 +22,6 @@ public class QuestionBusinessService {
     @Autowired
     private QuestionDao questionDao;
 
-    @Autowired
-    private AuthenticationService authenticationService;
 
     @Autowired
     private UserDao userDao;
@@ -47,7 +45,6 @@ public class QuestionBusinessService {
         authenticateUser(userAuthToken.getUser(),userAuthToken.getLogoutAt());
 
         questionEntity.setUuid(UUID.randomUUID().toString());
-        // questionEntity.setId();
         questionEntity.setDate(ZonedDateTime.now());
         questionEntity.setUser(userAuthToken.getUser());
         return questionDao.createQuestion(questionEntity);
