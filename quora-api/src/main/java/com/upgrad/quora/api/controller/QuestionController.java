@@ -32,7 +32,7 @@ public class QuestionController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/question/create", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(final QuestionRequest questionRequest,@RequestHeader("authorization") final String authorization)
-            throws AuthenticationFailedException {
+            throws AuthorizationFailedException {
         final QuestionEntity questionEntity = new QuestionEntity();
         questionEntity.setContent(questionRequest.getContent());
         final QuestionEntity createdQuestionEntity = questionBusinessService.createQuestion(questionEntity,authorization);
@@ -41,7 +41,7 @@ public class QuestionController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/question/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorization) throws AuthenticationFailedException {
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
         final QuestionEntity questionEntity = new QuestionEntity();
         final List<QuestionDetailsResponse> questions = new ArrayList<QuestionDetailsResponse>();
 
@@ -57,11 +57,22 @@ public class QuestionController {
     public ResponseEntity<QuestionEditResponse> editQuestionContent(final QuestionEditRequest questionEditRequest ,
                                                                     @PathVariable("questionId") final String questionId,
                                                                     @RequestHeader("authorization") final String authorization)
-            throws AuthenticationFailedException, AuthorizationFailedException, InvalidQuestionException {
+            throws AuthorizationFailedException, InvalidQuestionException {
 
+        UserAuthEntity userAuth = commonBusinessService.getAuthToken(authorization);
+        authorizeUser(userAuth);
+        QuestionEntity questionEntity = questionBusinessService.getQuestionById(questionId);
 
-        final QuestionEntity questionEntity = questionBusinessService.editQuestionContent(authorization ,questionId,questionEditRequest.getContent());
-        QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(questionEntity.getUuid()).status("QUESTION EDITED");
+        if(questionEntity == null) {
+            throw new InvalidQuestionException("QUES-001","Entered question uuid does not exist");
+        }
+
+        if(userAuth.getUser() != questionEntity.getUser()) {
+            throw new AuthorizationFailedException("ATHR-003", "Only the question owner can edit the question");
+        }
+
+        final QuestionEntity editedQuestion = questionBusinessService.editQuestionContent(questionId,questionEditRequest.getContent());
+        QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(editedQuestion.getUuid()).status("QUESTION EDITED");
         return new ResponseEntity<>(questionEditResponse, HttpStatus.OK);
     }
 
@@ -69,10 +80,21 @@ public class QuestionController {
     @RequestMapping(method = RequestMethod.DELETE, value = "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@PathVariable(name = "questionId") String questionId,
                                                              @RequestHeader(name = "authorization")
-            String authorization) throws AuthorizationFailedException, InvalidQuestionException, AuthenticationFailedException {
+            String authorization) throws AuthorizationFailedException, InvalidQuestionException {
 
+        UserAuthEntity userAuth = commonBusinessService.getAuthToken(authorization);
+        authorizeUser(userAuth);
+        QuestionEntity questionEntity = questionBusinessService.getQuestionById(questionId);
 
-        questionBusinessService.deleteQuestion(authorization, questionId);
+        if(questionEntity == null) {
+            throw new InvalidQuestionException("QUES-001","Entered question uuid does not exist");
+        }
+
+        if(userAuth.getUser() != questionEntity.getUser() || userAuth.getUser().getRole().equals("non-admin")) {
+            throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
+        }
+
+        questionBusinessService.deleteQuestion(questionId);
 
         QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse();
         questionDeleteResponse.setId(questionId);
@@ -85,7 +107,7 @@ public class QuestionController {
     @RequestMapping(method = RequestMethod.GET, path = "/question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions( @PathVariable("userId") final String uuid,
                                                                           @RequestHeader("authorization") final String authorization
-                                                                         ) throws AuthenticationFailedException, UserNotFoundException {
+                                                                         ) throws AuthorizationFailedException, UserNotFoundException {
         final QuestionEntity questionEntity = new QuestionEntity();
         final List<QuestionDetailsResponse> questions = new ArrayList<QuestionDetailsResponse>();
 
@@ -97,7 +119,16 @@ public class QuestionController {
         return new ResponseEntity<>(questions,  HttpStatus.OK);
     }
 
+    public void authorizeUser(UserAuthEntity userAuthEntity) throws AuthorizationFailedException {
 
+        if(userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+
+        if(userAuthEntity.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit an answer");
+        }
+    }
 
 
 }

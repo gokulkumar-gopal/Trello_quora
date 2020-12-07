@@ -25,6 +25,11 @@ public class CommonBusinessService {
         return userEntity;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public UserAuthEntity getAuthToken(String authorization) {
+        return userDao.getUserAuthToken(authorization);
+    }
+
     @Transactional(propagation =  Propagation.REQUIRED)
     public UserAuthEntity authorizeUser(final String authorization) throws AuthorizationFailedException {
         UserAuthEntity userAuthEntity = userDao.getUserAuthToken(authorization);
