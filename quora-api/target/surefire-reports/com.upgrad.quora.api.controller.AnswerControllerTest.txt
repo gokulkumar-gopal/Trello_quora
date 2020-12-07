@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: com.upgrad.quora.api.controller.AnswerControllerTest
+-------------------------------------------------------------------------------
+Tests run: 14, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.236 s <<< FAILURE! - in com.upgrad.quora.api.controller.AnswerControllerTest
+deleteNonExistingAnswer(com.upgrad.quora.api.controller.AnswerControllerTest)  Time elapsed: 0.073 s  <<< ERROR!
+org.springframework.web.util.NestedServletException: Request processing failed; nested exception is com.upgrad.quora.service.exception.AnswerNotFoundException
+	at com.upgrad.quora.api.controller.AnswerControllerTest.deleteNonExistingAnswer(AnswerControllerTest.java:102)
+Caused by: com.upgrad.quora.service.exception.AnswerNotFoundException
+	at com.upgrad.quora.api.controller.AnswerControllerTest.deleteNonExistingAnswer(AnswerControllerTest.java:102)
+
+editNonExistingAnswer(com.upgrad.quora.api.controller.AnswerControllerTest)  Time elapsed: 0.082 s  <<< ERROR!
+org.springframework.web.util.NestedServletException: Request processing failed; nested exception is com.upgrad.quora.service.exception.AnswerNotFoundException
+	at com.upgrad.quora.api.controller.AnswerControllerTest.editNonExistingAnswer(AnswerControllerTest.java:70)
+Caused by: com.upgrad.quora.service.exception.AnswerNotFoundException
+	at com.upgrad.quora.api.controller.AnswerControllerTest.editNonExistingAnswer(AnswerControllerTest.java:70)
+
